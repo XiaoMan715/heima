@@ -5,7 +5,7 @@ import io.jsonwebtoken.*;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.*;
-
+//test
 public class AppJwtUtil {
 
     // TOKEN的有效期一天（S）
