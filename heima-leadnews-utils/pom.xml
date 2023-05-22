@@ -28,6 +28,7 @@
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
+
         </dependency>
         <!--匹配度工具包-->
         <dependency>
