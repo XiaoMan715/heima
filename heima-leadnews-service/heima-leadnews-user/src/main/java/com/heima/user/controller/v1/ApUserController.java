@@ -3,6 +3,9 @@ package com.heima.user.controller.v1;
 import com.heima.model.common.dtos.ResponseResult;
 import com.heima.model.user.dtos.LoginDto;
 import com.heima.user.service.ApUserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/v1/login")
+@Api(value = "app端的接口",tags = "app端用户登录接口")
 public class ApUserController {
 
     @Autowired
@@ -23,7 +27,8 @@ public class ApUserController {
      */
 
     @PostMapping("/login_auth")
-    public ResponseResult Login(@RequestBody LoginDto loginDto) {
+    @ApiOperation(value = "登录接口")
+    public ResponseResult Login(@ApiParam(value = "前端传值" ,required = true) @RequestBody LoginDto loginDto) {
 
         return  apUserService.Login(loginDto);
     }
