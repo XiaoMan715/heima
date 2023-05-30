@@ -8,14 +8,18 @@ import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapp
 import com.heima.article.mapper.ApArticleContentMapper;
 import com.heima.article.mapper.ApArticleMapper;
 import com.heima.file.service.FileStorageService;
+import com.heima.file.service.impl.MinIOFileStorageService;
 import com.heima.model.article.pojos.ApArticle;
 import com.heima.model.article.pojos.ApArticleContent;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
+import io.minio.PostPolicy;
 import io.minio.PutObjectArgs;
 import io.minio.errors.*;
+import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +47,10 @@ public class MinIoTest {
     private FileStorageService fileStorageService;
     @Autowired
     private ApArticleMapper apArticleMapper;
+    @Autowired
+    private MinioClient minioClient;
+    @Autowired
+
 
     @Test
     public void test() throws IOException, ServerException, InvalidBucketNameException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
@@ -83,5 +91,25 @@ public class MinIoTest {
 
     }
 
+    @Test
+    public void  dd() throws ServerException, InvalidBucketNameException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException, InvalidExpiresRangeException {
+       // GetPresignedObjectUrlArgs args =new GetPresignedObjectUrlArgs();
+     //   final String leadnews = minioClient.getObjectUrl("leadnews", "cf488e3199ab4cce91823e7856f128a8.jpg");
+       /*  String leadnews = minioClient.getObjectUrl("leadnews", "2023/05/30/49df2619f9a1468a8c1c4f707da9fdf8.jpg");
+        System.out.println(leadnews);*/
+        // String presignedObjectUrl = minioClient.getPresignedObjectUrl();
+        //minioClient.getObjectUrl("leadnews","cf488e3199ab4cce91823e7856f128a8.jpg");
+        // String leadnews = minioClient.presignedGetObject("leadnews", "2023/05/30/49df2619f9a1468a8c1c4f707da9fdf8.jpg");
+/*String url ="http://192.168.200.130:9000/leadnews/2023/05/30/1a8b60d4918948289e6f104ed356a853.jpg";
+        System.out.println(url.indexOf("leadnews"));
+         String substring = url.substring(28 + "leadnews".length() + 1);
+        System.out.println(minioClient.presignedGetObject("leadnews", substring));*/
+        // System.out.println(leadnews);
+//
+
+         String leadnews = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().bucket("leadnews").object("2023/05/30/727c7aef4ffa439ca2de5ce17188d70a.jpg").method(Method.GET).build());
+
+        System.out.println(leadnews);
+    }
 
 }

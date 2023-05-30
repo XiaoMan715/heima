@@ -25,10 +25,10 @@ public class WmTokenInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //获取用户信息
-         String userID = request.getHeader("userID");
+         String userID = request.getHeader("userId");
          if (StringUtils.hasText(userID)){
              WmUser wmUser = new WmUser();
-             wmUser.setApUserId(Integer.valueOf(userID));
+             wmUser.setId(Integer.valueOf(userID));
              //将用户存在线程中
              WmThreadLocalUtil.setUser(wmUser);
          }

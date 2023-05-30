@@ -1,5 +1,6 @@
 package com.heima.model.wemedia.pojos;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -17,17 +18,19 @@ public class WmMaterial implements Serializable {
     /**
      * 主键
      */
-    @TableId
-    private Object id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
 
     /**
      * 自媒体用户ID
      */
-    private Object userId;
+    @TableField("user_id")
+    private Integer userId;
 
     /**
      * 图片地址
      */
+    @TableField("url")
     private String url;
 
     /**
@@ -35,16 +38,19 @@ public class WmMaterial implements Serializable {
             0 图片
             1 视频
      */
+    @TableField("type")
     private Integer type;
 
     /**
      * 是否收藏
      */
+    @TableField("is_collection")
     private Integer isCollection;
 
     /**
      * 创建时间
      */
+    @TableField("created_time")
     private Date createdTime;
 
     @TableField(exist = false)

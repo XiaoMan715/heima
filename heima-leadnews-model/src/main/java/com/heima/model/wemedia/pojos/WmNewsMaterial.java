@@ -1,8 +1,8 @@
 package com.heima.model.wemedia.pojos;
 
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import lombok.Data;
 
@@ -17,17 +17,17 @@ public class WmNewsMaterial implements Serializable {
      * 主键
      */
     @TableId
-    private Object id;
+    private Integer id;
 
     /**
      * 素材ID
      */
-    private Object materialId;
+    private Integer materialId;
 
     /**
      * 图文ID
      */
-    private Object newsId;
+    private Integer newsId;
 
     /**
      * 引用类型

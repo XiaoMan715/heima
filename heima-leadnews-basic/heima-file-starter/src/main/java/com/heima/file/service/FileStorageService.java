@@ -39,5 +39,5 @@ public interface FileStorageService {
      *
      */
     public byte[]  downLoadFile(String pathUrl);
-
+    public  String getImgUrl(String url) ;
 }

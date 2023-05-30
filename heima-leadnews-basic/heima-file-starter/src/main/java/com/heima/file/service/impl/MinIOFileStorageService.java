@@ -4,10 +4,9 @@ package com.heima.file.service.impl;
 import com.heima.file.config.MinIOConfig;
 import com.heima.file.config.MinIOConfigProperties;
 import com.heima.file.service.FileStorageService;
-import io.minio.GetObjectArgs;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
-import io.minio.RemoveObjectArgs;
+import io.minio.*;
+import io.minio.errors.*;
+import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -17,6 +16,8 @@ import org.springframework.util.StringUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -161,4 +162,30 @@ public class MinIOFileStorageService implements FileStorageService {
         }
         return byteArrayOutputStream.toByteArray();
     }
+
+    /**
+     * 获取上传后能显示的url
+     * @param url上传成功后返回的路径
+     * @return
+     */
+    @Override
+    public  String getImgUrl(String url) {
+        //获取桶的下标
+        int indexOf = url.indexOf(minIOConfigProperties.getBucket());
+        //截取桶下标后面的名字
+        String substring = url.substring(indexOf + minIOConfigProperties.getBucket().length() + 1);
+        String imgUrl = null;
+        try {
+           // imgUrl = minioClient.presignedGetObject(minIOConfigProperties.getBucket(), substring);
+             imgUrl = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().bucket(minIOConfigProperties.getBucket()).object(substring).method(Method.GET).build());
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return imgUrl;
+
+    }
+
+
 }
