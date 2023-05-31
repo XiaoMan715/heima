@@ -11,6 +11,7 @@ import com.heima.file.service.FileStorageService;
 import com.heima.file.service.impl.MinIOFileStorageService;
 import com.heima.model.article.pojos.ApArticle;
 import com.heima.model.article.pojos.ApArticleContent;
+import com.heima.model.wemedia.pojos.WmMaterial;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -107,9 +108,11 @@ public class MinIoTest {
         // System.out.println(leadnews);
 //
 
-         String leadnews = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().bucket("leadnews").object("2023/05/30/727c7aef4ffa439ca2de5ce17188d70a.jpg").method(Method.GET).build());
+//         String leadnews = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().bucket("leadnews").object("2023/05/30/727c7aef4ffa439ca2de5ce17188d70a.jpg").method(Method.GET).build());
+//
+//        System.out.println(leadnews);
 
-        System.out.println(leadnews);
+
     }
 
 }
