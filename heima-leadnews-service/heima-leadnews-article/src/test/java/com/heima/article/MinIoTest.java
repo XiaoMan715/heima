@@ -1,12 +1,16 @@
 package com.heima.article;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.heima.article.mapper.ApArticleContentMapper;
 import com.heima.article.mapper.ApArticleMapper;
+import com.heima.common.constants.WemediaConstants;
 import com.heima.file.service.FileStorageService;
 import com.heima.file.service.impl.MinIOFileStorageService;
 import com.heima.model.article.pojos.ApArticle;
@@ -22,6 +26,7 @@ import io.minio.PutObjectArgs;
 import io.minio.errors.*;
 import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.protocol.types.Field;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +38,11 @@ import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Wrapper;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @SpringBootTest(classes = ArticleApplication.class)
 @RunWith(SpringRunner.class)
@@ -93,7 +101,7 @@ public class MinIoTest {
     }
 
     @Test
-    public void  dd() throws ServerException, InvalidBucketNameException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException, InvalidExpiresRangeException {
+    public void  dd() {
        // GetPresignedObjectUrlArgs args =new GetPresignedObjectUrlArgs();
      //   final String leadnews = minioClient.getObjectUrl("leadnews", "cf488e3199ab4cce91823e7856f128a8.jpg");
        /*  String leadnews = minioClient.getObjectUrl("leadnews", "2023/05/30/49df2619f9a1468a8c1c4f707da9fdf8.jpg");
@@ -111,7 +119,15 @@ public class MinIoTest {
 //         String leadnews = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().bucket("leadnews").object("2023/05/30/727c7aef4ffa439ca2de5ce17188d70a.jpg").method(Method.GET).build());
 //
 //        System.out.println(leadnews);
-
+/*
+ String content="[{\"type\":\"text\",\"value\":\"Kafka文件的存储机制Kafka文件的存储机制Kafka文件的存储机制Kafka文件的存储机制Kafka文件的存储机制Kafka文件的存储机制Kafka文件的存储机制Kafka文件的存储机制Kafka文件的存储机制Kafka文件的存储机制\"},{\"type\":\"image\",\"value\":\"http://192.168.200.130:9000/leadnews/2021/4/20210418/4a498d9cf3614570ac0cb2da3e51c164.jpg\"},{\"type\":\"text\",\"value\":\"请在这里输入正文\"}]";
+        ObjectMapper objectMapper =new ObjectMapper();
+         List<Map> listmap = objectMapper.readValue(content, new TypeReference<List<Map>>() {});
+       // System.out.println(listmap);
+        List imglist= new ArrayList();
+        imglist=   listmap.stream().filter(x->x.get("type").equals("image") ).map(x->x.get("value")).collect(Collectors.toList());
+        System.out.println(imglist);
+*/
 
     }
 

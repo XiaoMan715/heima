@@ -31,20 +31,18 @@
         FROM
         `ap_article` aa
         LEFT JOIN ap_article_config aac ON aa.id = aac.article_id
-        <where>
-            and aac.is_delete != 1
-            and aac.is_down != 1
-            <!-- loadmore -->
-            <if test="type != null and type == 1">
-                and aa.publish_time <![CDATA[<]]> #{dto.minBehotTime}
-            </if>
-            <if test="type != null and type == 2">
-                and aa.publish_time <![CDATA[>]]> #{dto.maxBehotTime}
-            </if>
-            <if test="dto.tag != '__all__'">
-                and aa.channel_id = #{dto.tag}
-            </if>
-        </where>
+        and aac.is_delete != 1
+        and aac.is_down != 1
+        <!-- loadmore -->
+        <if test="type != null and type == 1">
+            and aa.publish_time <![CDATA[<]]> #{dto.minBehotTime}
+        </if>
+        <if test="type != null and type == 2">
+            and aa.publish_time <![CDATA[>]]> #{dto.maxBehotTime}
+        </if>
+        <if test="dto.tag != '__all__'">
+            and aa.channel_id = #{dto.tag}
+        </if>
         order by aa.publish_time desc
         limit #{dto.size}
     </select>

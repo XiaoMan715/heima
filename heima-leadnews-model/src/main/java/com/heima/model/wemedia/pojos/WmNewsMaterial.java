@@ -1,5 +1,6 @@
 package com.heima.model.wemedia.pojos;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -16,17 +17,19 @@ public class WmNewsMaterial implements Serializable {
     /**
      * 主键
      */
-    @TableId
+    @TableId(value = "id",type = IdType.AUTO)
     private Integer id;
 
     /**
      * 素材ID
      */
+    @TableField("material_id")
     private Integer materialId;
 
     /**
      * 图文ID
      */
+    @TableField("news_id")
     private Integer newsId;
 
     /**
@@ -34,11 +37,13 @@ public class WmNewsMaterial implements Serializable {
             0 内容引用
             1 主图引用
      */
+    @TableField("type")
     private Integer type;
 
     /**
      * 引用排序
      */
+    @TableField("ord")
     private Integer ord;
 
     @TableField(exist = false)
