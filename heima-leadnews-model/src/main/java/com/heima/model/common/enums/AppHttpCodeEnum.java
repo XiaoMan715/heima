@@ -26,7 +26,12 @@ public enum AppHttpCodeEnum {
     DATA_NOT_EXIST(1002,"数据不存在"),
     // 数据错误 3000~3500
     NO_OPERATOR_AUTH(3000,"无权限操作"),
+    ALIYUN_CHECKBACK_OBJECTNUll(6001,"阿里云审核请求返回对象异常"),
+    ALIYUN_CHECKBACK_LISTNUll(6002,"阿里云审核请求返回集合异常"),
+
     NEED_ADMIND(3001,"需要管理员权限");
+
+
 
     int code;
     String errorMessage;

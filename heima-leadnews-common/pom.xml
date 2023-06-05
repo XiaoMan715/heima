@@ -17,6 +17,13 @@
             <groupId>com.heima</groupId>
             <artifactId>heima-leadnews-utils</artifactId>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.aliyun/imageaudit20191230 -->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>imageaudit20191230</artifactId>
+            <version>2.0.6</version>
+        </dependency>
+
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
