@@ -1,16 +1,25 @@
 package com.heima.article.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.heima.article.mapper.ApArticleConfigMapper;
+import com.heima.article.mapper.ApArticleContentMapper;
 import com.heima.article.mapper.ApArticleMapper;
 import com.heima.article.service.ApArticleService;
 import com.heima.common.constants.ArticleConstants;
+import com.heima.model.article.dtos.ArticleDto;
 import com.heima.model.article.dtos.ArticleHomeDto;
 import com.heima.model.article.pojos.ApArticle;
+import com.heima.model.article.pojos.ApArticleConfig;
+import com.heima.model.article.pojos.ApArticleContent;
 import com.heima.model.common.dtos.ResponseResult;
+import com.heima.model.common.enums.AppHttpCodeEnum;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
@@ -27,6 +36,10 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper,ApArticle>
 
     @Autowired
     private ApArticleMapper apArticleMapper;
+    @Autowired
+    private ApArticleConfigMapper apArticleConfigMapper;
+    @Autowired
+    private ApArticleContentMapper apArticleContentMapper;
 
     /**
      * 加载文章
@@ -66,6 +79,48 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper,ApArticle>
         return ResponseResult.okResult(apArticles);
     }
 
+    @Override
+    public ResponseResult saveArticle(ArticleDto dto) {
+        //1检查参数 如果id为空为新增 id有值为修改
+        if (ObjectUtils.isEmpty(dto)){
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_REQUIRE,"缺少文章参数");
+        }
+        //拷贝传过来的参数
+        ApArticle article=new ApArticle();
+        BeanUtils.copyProperties(dto,article);
+
+        if (dto.getId()==null){
+            //新增
+            //保存文章
+            save(article);
+            //将文章保存在配置表里面
+            ApArticleConfig articleConfig =new ApArticleConfig(article.getId());
+            apArticleConfigMapper.insert(articleConfig);
+
+            //将文章内容保存在内容表里面
+            ApArticleContent articleContent =new ApArticleContent();
+            apArticleContentMapper.insert(articleContent);
+
+
+
+        }else {
+            //2.2 存在id   修改  文章  文章内容
+
+            //修改  文章
+            updateById(article);
+
+            //修改文章内容
+            ApArticleContent apArticleContent = apArticleContentMapper.selectOne(Wrappers.<ApArticleContent>lambdaQuery().eq(ApArticleContent::getArticleId, dto.getId()));
+          if (ObjectUtils.isEmpty(apArticleContent)){
+              return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST,"未查到对应的文章数据");
+          }
+            apArticleContent.setContent(dto.getContent());
+            apArticleContentMapper.updateById(apArticleContent);
+
+        }
+
+        return ResponseResult.okResult(article.getId());
+    }
 
 
 }
