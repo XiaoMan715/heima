@@ -81,6 +81,14 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper,ApArticle>
 
     @Override
     public ResponseResult saveArticle(ArticleDto dto) {
+
+      /*  try {
+            System.out.println("2222222222222222222");
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }*/
+        System.out.println("aparewds dsaveArticle");
         //1检查参数 如果id为空为新增 id有值为修改
         if (ObjectUtils.isEmpty(dto)){
             return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_REQUIRE,"缺少文章参数");
@@ -88,6 +96,7 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper,ApArticle>
         //拷贝传过来的参数
         ApArticle article=new ApArticle();
         BeanUtils.copyProperties(dto,article);
+        log.info("article1:{}",article);
 
         if (dto.getId()==null){
             //新增
@@ -99,6 +108,8 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper,ApArticle>
 
             //将文章内容保存在内容表里面
             ApArticleContent articleContent =new ApArticleContent();
+            articleContent.setArticleId(article.getId());
+            articleContent.setContent(dto.getContent());
             apArticleContentMapper.insert(articleContent);
 
 
@@ -108,11 +119,11 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper,ApArticle>
 
             //修改  文章
             updateById(article);
-
+            log.info("article:{}",article);
             //修改文章内容
             ApArticleContent apArticleContent = apArticleContentMapper.selectOne(Wrappers.<ApArticleContent>lambdaQuery().eq(ApArticleContent::getArticleId, dto.getId()));
           if (ObjectUtils.isEmpty(apArticleContent)){
-              return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST,"未查到对应的文章数据");
+              return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST,"未查到对应的文章数据d w ");
           }
             apArticleContent.setContent(dto.getContent());
             apArticleContentMapper.updateById(apArticleContent);
