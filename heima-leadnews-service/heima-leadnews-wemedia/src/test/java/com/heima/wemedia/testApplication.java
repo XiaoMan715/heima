@@ -1,6 +1,7 @@
 package com.heima.wemedia;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.heima.apis.article.IArticleClient;
 import com.heima.common.aliyun.GreenImageScan;
@@ -13,8 +14,11 @@ import com.heima.file.service.FileStorageService;
 import com.heima.model.article.dtos.ArticleDto;
 import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.model.wemedia.pojos.WmNews;
+import com.heima.model.wemedia.pojos.WmSensitive;
+import com.heima.utils.common.SensitiveWordUtil;
 import com.heima.wemedia.mapper.WmNewsMapper;
 import com.heima.wemedia.mapper.WmNewsMaterialMapper;
+import com.heima.wemedia.mapper.WmSensitiveMapper;
 import com.heima.wemedia.service.WmNewsAutoScanService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.protocol.types.Field;
@@ -48,6 +52,8 @@ public class testApplication {
     private FileStorageService fileStorageService;
     @Autowired
     private WmNewsAutoScanService wmNewsAutoScanService;
+    @Autowired
+    private WmSensitiveMapper wmSensitiveMapper;
 
 
     @Test
@@ -155,6 +161,16 @@ public class testApplication {
         //client.saveArticle(articleDto);
 
 
+    }
+
+    @Test
+    public void sdea(){
+       /* LambdaQueryWrapper<WmSensitive> lqw =new LambdaQueryWrapper<>();
+        lqw.select(WmSensitive::getSensitives);
+        List<WmSensitive> wmSensitives = wmSensitiveMapper.selectList(lqw);
+        List<String> sensitiveList = wmSensitives.stream().map(x -> x.getSensitives()).collect(Collectors.toList());
+        SensitiveWordUtil.initMap(sensitiveList);
+        Map<String, Integer> map = SensitiveWordUtil.matchWords(content);*/
     }
 
 }
