@@ -171,6 +171,8 @@ public class testApplication {
         List<String> sensitiveList = wmSensitives.stream().map(x -> x.getSensitives()).collect(Collectors.toList());
         SensitiveWordUtil.initMap(sensitiveList);
         Map<String, Integer> map = SensitiveWordUtil.matchWords(content);*/
+        WmNews wmNews = wmNewsMapper.selectById(6259);
+        log.info("wmNews:{}",wmNews);
     }
 
 }

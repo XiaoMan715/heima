@@ -27,6 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -37,7 +39,6 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@Transactional
 public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
     @Autowired
     private WmNewsMapper wmNewsMapper;
@@ -66,6 +67,7 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
      */
     @Override
     @Async//异步调用
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public void autoScanWmNews(Integer id) {
         //查询自媒体文章 通过id查询到自媒体文章
         if (id == null) {
@@ -88,7 +90,7 @@ public class WmNewsAutoScanServiceImpl implements WmNewsAutoScanService {
                 images.addAll(Arrays.asList(l));
             }
             //自管理的敏感词审核
-            boolean isSensitive = handleSensitiveScan( texts, wmNews);
+        //    boolean isSensitive = handleSensitiveScan( texts, wmNews);
 
            /* //调用接口去判断是否违规 不想写了 就是去调阿里云的接口判断是否违规 我代码里面有自己看吧 直接默认合格
             List<String> adlist =new ArrayList<>();

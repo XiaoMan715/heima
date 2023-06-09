@@ -30,6 +30,8 @@ import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -39,7 +41,6 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@Transactional
 public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> implements WmNewsService {
     private ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
@@ -81,6 +82,7 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public ResponseResult submitNews(WmNewsDto dto) {
         log.info("dto:{}", dto);
         if (ObjectUtils.isEmpty(dto) || dto.getContent() == null) {
@@ -114,6 +116,7 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
         wmNews.setSubmitedTime(new Date());
         log.info("type:{}",wmNews.getType());
         saveOrUpdateWmNews(wmNews);
+        log.info("wwwwwwww:{}",wmNews.getId());
 
         //判断是草稿还是保存 status提交为1  草稿为0 如果是草稿不需要保存素材关系直接先落库就行
         if (dto.getStatus().equals(WmNews.Status.NORMAL)) {
@@ -157,7 +160,8 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
      * @param wmNews
      * @param images 图片集合
      */
-    private void saveRelativeInfoForCover(WmNewsDto dto, WmNews wmNews, List<String> images) {
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void saveRelativeInfoForCover(WmNewsDto dto, WmNews wmNews, List<String> images) {
         if (ObjectUtils.isEmpty(dto)) {
             throw new CustomException(AppHttpCodeEnum.DATA_NOT_EXIST);
         }
@@ -193,7 +197,8 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
     }
 
     //处理内容里面的图片素材 并且保存
-    private void saveContentImgs(List images, Integer newId, Integer type) {
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void saveContentImgs(List images, Integer newId, Integer type) {
         if (CollectionUtils.isEmpty(images)) {
             throw new CustomException(AppHttpCodeEnum.DATA_NOT_EXIST);
         }
@@ -210,8 +215,8 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
 
     }
 
-
-    private void saveOrUpdateWmNews(WmNews wmNews) {
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void saveOrUpdateWmNews(WmNews wmNews) {
         if (wmNews.getId() == null) {
             //新增
             save(wmNews);

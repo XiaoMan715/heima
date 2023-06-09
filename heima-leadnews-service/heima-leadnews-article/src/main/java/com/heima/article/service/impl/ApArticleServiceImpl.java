@@ -6,6 +6,7 @@ import com.heima.article.mapper.ApArticleConfigMapper;
 import com.heima.article.mapper.ApArticleContentMapper;
 import com.heima.article.mapper.ApArticleMapper;
 import com.heima.article.service.ApArticleService;
+import com.heima.article.service.ArticleFreemarkerService;
 import com.heima.common.constants.ArticleConstants;
 import com.heima.model.article.dtos.ArticleDto;
 import com.heima.model.article.dtos.ArticleHomeDto;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -27,7 +29,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-@Transactional
+@Transactional(propagation = Propagation.REQUIRED)
 public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper,ApArticle> implements ApArticleService {
     // 单页最大加载的数字
     private final static short MAX_PAGE_SIZE = 50;
@@ -40,6 +42,8 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper,ApArticle>
     private ApArticleConfigMapper apArticleConfigMapper;
     @Autowired
     private ApArticleContentMapper apArticleContentMapper;
+    @Autowired
+    private ArticleFreemarkerService articleFreemarkerService;
 
     /**
      * 加载文章
@@ -129,7 +133,8 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper,ApArticle>
             apArticleContentMapper.updateById(apArticleContent);
 
         }
-
+        //异步调用生成静态文件上传到mio中
+          articleFreemarkerService.buildArticleToMinIO(article, dto.getContent());
         return ResponseResult.okResult(article.getId());
     }
 
