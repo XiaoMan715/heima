@@ -4,6 +4,7 @@ import com.heima.model.schedule.dto.Task;
 import com.heima.schedule.ScheduleApplication;
 import com.heima.schedule.service.TaskServic;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.internal.constraintvalidators.bv.time.futureorpresent.FutureOrPresentValidatorForOffsetDateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,27 @@ class TaskServicImplTest {
 private TaskServic taskServic;
     @Test
     void addTask() {
-        Task task =new Task();
-        task.setTaskType(100);
-        task.setPriority(50);
-        task.setParameters("task test".getBytes());
-        task.setExecuteTime(new Date().getTime()+5000000);
-        final long l = taskServic.addTask(task);
-        log.info("taskid:{}",l);
+
+        for (int i = 0; i < 5; i++) {
+            Task task =new Task();
+            task.setTaskType(100+i);
+            task.setPriority(50);
+            task.setParameters("task test".getBytes());
+            task.setExecuteTime(new Date().getTime()+500*i);
+            final long l = taskServic.addTask(task);
+
+        }
+
     }
+
+    @Test
+    public void cacheTesk(){
+        final boolean b = taskServic.cancelTask(1667724670767759361L);
+        System.out.println(b);
+    }
+    @Test
+    public void taskPull(){
+        System.out.println(taskServic.poll(100, 50));
+    }
+
 }

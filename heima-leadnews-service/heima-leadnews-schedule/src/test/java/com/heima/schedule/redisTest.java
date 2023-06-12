@@ -21,4 +21,9 @@ public class redisTest {
          String list_oo1 = cacheService.lRightPop("list_oo1");
          log.info("list_oo1:{}",list_oo1 );
     }
+
+     @Test
+    public void testKeys(){
+
+     }
 }
