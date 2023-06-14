@@ -3,6 +3,7 @@ package com.heima.wemedia.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -36,6 +37,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -155,6 +157,8 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 
+
+
     /**
      * * 第一个功能：如果当前封面类型为自动，则设置封面类型的数据
      * * 匹配规则：
@@ -233,6 +237,35 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
           updateById(wmNews);
         }
 
+    }
+
+    /**
+     * 文章上下架接口
+     * @param dto
+     * @return
+     */
+    @Override
+    public ResponseResult downOrUp(WmNewsDto dto) {
+        //检查文章id
+        if (ObjectUtils.isEmpty(dto)&& StringUtils.isEmpty(dto.getId())){
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_REQUIRE);
+        }
+        //查询文章
+         WmNews wmNews = getById(dto.getId());
+        if (ObjectUtils.isEmpty(wmNews)){
+            return ResponseResult.errorResult(AppHttpCodeEnum.DATA_NOT_EXIST);
+        }
+
+        //检查文章是否发布
+        if (!(wmNews.getStatus().intValue()==WmNews.Status.PUBLISHED.getCode())) {
+            return ResponseResult.errorResult(AppHttpCodeEnum.PARAM_REQUIRE,"当前文章不是发布状态");
+        }
+        //4.修改文章enable
+        if(dto.getEnable() != null && dto.getEnable() > -1 && dto.getEnable() < 2){
+            update(Wrappers.<WmNews>lambdaUpdate().set(WmNews::getEnable,dto.getEnable())
+                    .eq(WmNews::getId,wmNews.getId()));
+        }
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 
 }
