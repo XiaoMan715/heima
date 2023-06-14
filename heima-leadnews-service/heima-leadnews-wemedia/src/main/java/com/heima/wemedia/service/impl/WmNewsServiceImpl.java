@@ -25,6 +25,7 @@ import com.heima.wemedia.mapper.WmNewsMapper;
 import com.heima.wemedia.mapper.WmNewsMaterialMapper;
 import com.heima.wemedia.service.WmNewsAutoScanService;
 import com.heima.wemedia.service.WmNewsService;
+import com.heima.wemedia.service.WmNewsTaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.BeanUtils;
@@ -49,6 +50,9 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
     private WmNewsMaterialMapper wmNewsMaterialMapper;
     @Autowired
     private WmNewsAutoScanService wmNewsAutoScanService;
+
+    @Autowired
+    private WmNewsTaskService wmNewsTaskService;
 
     @Override
     public ResponseResult findAll(WmNewsPageReqDto dto) {
@@ -145,7 +149,9 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
         //不是草稿 处理封面的素材
         saveRelativeInfoForCover(dto, wmNews, images);
         //审核文章
-        wmNewsAutoScanService.autoScanWmNews(wmNews.getId());
+     //   wmNewsAutoScanService.autoScanWmNews(wmNews.getId());
+        wmNewsTaskService.addNewsToTask(wmNews.getId(),wmNews.getPublishTime());
+
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 
