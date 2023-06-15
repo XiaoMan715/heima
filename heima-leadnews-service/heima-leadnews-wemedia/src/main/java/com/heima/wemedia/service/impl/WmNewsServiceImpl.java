@@ -1,6 +1,7 @@
 package com.heima.wemedia.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.heima.common.constants.WemediaConstants;
+import com.heima.common.constants.WmNewsMessageConstants;
 import com.heima.common.exception.CustomException;
 import com.heima.model.common.dtos.PageResponseResult;
 import com.heima.model.common.dtos.ResponseResult;
@@ -31,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -55,6 +58,8 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
 
     @Autowired
     private WmNewsTaskService wmNewsTaskService;
+    @Autowired
+    private KafkaTemplate<String,String> kafkaTemplate;
 
     @Override
     public ResponseResult findAll(WmNewsPageReqDto dto) {
@@ -264,6 +269,14 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
         if(dto.getEnable() != null && dto.getEnable() > -1 && dto.getEnable() < 2){
             update(Wrappers.<WmNews>lambdaUpdate().set(WmNews::getEnable,dto.getEnable())
                     .eq(WmNews::getId,wmNews.getId()));
+            //发送消息通知修改
+            //发送消息，通知article端修改文章配置
+            if(wmNews.getArticleId() != null){
+                Map<String,Object> map = new HashMap<>();
+                map.put("articleId",wmNews.getArticleId());
+                map.put("enable",dto.getEnable());
+                kafkaTemplate.send(WmNewsMessageConstants.WM_NEWS_UP_OR_DOWN_TOPIC, JSON.toJSONString(map));
+            }
         }
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
