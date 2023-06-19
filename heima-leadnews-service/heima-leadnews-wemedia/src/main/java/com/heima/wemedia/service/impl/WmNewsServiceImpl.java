@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.heima.common.constants.RabbitConstants;
 import com.heima.common.constants.WemediaConstants;
 import com.heima.common.constants.WmNewsMessageConstants;
 import com.heima.common.exception.CustomException;
@@ -31,6 +32,7 @@ import com.heima.wemedia.service.WmNewsService;
 import com.heima.wemedia.service.WmNewsTaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.protocol.types.Field;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -60,6 +62,8 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
     private WmNewsTaskService wmNewsTaskService;
     @Autowired
     private KafkaTemplate<String,String> kafkaTemplate;
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     @Override
     public ResponseResult findAll(WmNewsPageReqDto dto) {
@@ -275,7 +279,9 @@ public class WmNewsServiceImpl extends ServiceImpl<WmNewsMapper, WmNews> impleme
                 Map<String,Object> map = new HashMap<>();
                 map.put("articleId",wmNews.getArticleId());
                 map.put("enable",dto.getEnable());
-                kafkaTemplate.send(WmNewsMessageConstants.WM_NEWS_UP_OR_DOWN_TOPIC, JSON.toJSONString(map));
+             //   kafkaTemplate.send(WmNewsMessageConstants.WM_NEWS_UP_OR_DOWN_TOPIC, JSON.toJSONString(map));
+                rabbitTemplate.convertAndSend(RabbitConstants.EXCANGE_NAME,"text.hehe",JSON.toJSONString(map));
+
             }
         }
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);

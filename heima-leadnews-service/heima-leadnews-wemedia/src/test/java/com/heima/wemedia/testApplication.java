@@ -1,33 +1,28 @@
 package com.heima.wemedia;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.heima.apis.article.IArticleClient;
 import com.heima.common.aliyun.GreenImageScan;
 import com.heima.common.aliyun.GreenTextScan;
 import com.heima.common.constants.AliYunCheckTextConstants;
-import com.heima.common.constants.ArticleConstants;
-import com.heima.common.constants.WemediaConstants;
+import com.heima.common.constants.RabbitConstants;
 import com.heima.common.exception.CustomException;
 import com.heima.file.service.FileStorageService;
-import com.heima.model.article.dtos.ArticleDto;
 import com.heima.model.common.enums.AppHttpCodeEnum;
 import com.heima.model.wemedia.pojos.WmNews;
-import com.heima.model.wemedia.pojos.WmSensitive;
-import com.heima.utils.common.SensitiveWordUtil;
 import com.heima.wemedia.mapper.WmNewsMapper;
 import com.heima.wemedia.mapper.WmNewsMaterialMapper;
 import com.heima.wemedia.mapper.WmSensitiveMapper;
 import com.heima.wemedia.service.WmNewsAutoScanService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.protocol.types.Field;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -54,6 +49,7 @@ public class testApplication {
     private WmNewsAutoScanService wmNewsAutoScanService;
     @Autowired
     private WmSensitiveMapper wmSensitiveMapper;
+
 
 
     @Test
@@ -117,9 +113,9 @@ public class testApplication {
         }
         //   greenTextScan.checkMessage();
     }
+
     @Autowired
     WmNewsMapper wmNewsMapper;
-
 
 
     @Test
@@ -128,33 +124,34 @@ public class testApplication {
         TypeReference<List<Map<String, Object>>> typeRef
                 = new TypeReference<List<Map<String, Object>>>() {
         };
-       // log.info("ss:{}",wmNews);
+        // log.info("ss:{}",wmNews);
         List<Map<String, Object>> content = objectMapper.readValue(wmNews.getContent(), typeRef);
 
-        List<String> images = content.stream().filter(x -> x.get("type").equals("image")).map(x ->(String) x.get("value")).collect(Collectors.toList());
-        List<String> texts = content.stream().filter(x -> x.get("type").equals("text")).map(x ->(String) x.get("value")).collect(Collectors.toList());
+        List<String> images = content.stream().filter(x -> x.get("type").equals("image")).map(x -> (String) x.get("value")).collect(Collectors.toList());
+        List<String> texts = content.stream().filter(x -> x.get("type").equals("text")).map(x -> (String) x.get("value")).collect(Collectors.toList());
         if (StringUtils.hasText(wmNews.getImages())) {
             String[] l = wmNews.getImages().split(",");
             images.addAll(Arrays.asList(l));
         }
-        images=images.stream().distinct().collect(Collectors.toList());
+        images = images.stream().distinct().collect(Collectors.toList());
 
 
         List<String> sceneList = new ArrayList<>();
         sceneList.add(AliYunCheckTextConstants.LABLE_AD);
         List<String> adlist = new ArrayList<>();
         adlist.add("pron");
-      // greenImageScan.checkImage(images,adlist);
-         List<Map<String, Object>> mapList = greenTextScan.checkTest(texts, sceneList);
-         mapList.stream().forEach(System.out::println);
+        // greenImageScan.checkImage(images,adlist);
+        List<Map<String, Object>> mapList = greenTextScan.checkTest(texts, sceneList);
+        mapList.stream().forEach(System.out::println);
 
 
     }
+
     @Autowired
     private IArticleClient client;
 
     @Test
-    public void  sdasdasd(){
+    public void sdasdasd() {
         wmNewsAutoScanService.autoScanWmNews(6248);
      /*   ArticleDto articleDto =new ArticleDto();
         articleDto.setId(1666047846295670786L);*/
@@ -164,7 +161,7 @@ public class testApplication {
     }
 
     @Test
-    public void sdea(){
+    public void sdea() {
        /* LambdaQueryWrapper<WmSensitive> lqw =new LambdaQueryWrapper<>();
         lqw.select(WmSensitive::getSensitives);
         List<WmSensitive> wmSensitives = wmSensitiveMapper.selectList(lqw);
@@ -172,7 +169,15 @@ public class testApplication {
         SensitiveWordUtil.initMap(sensitiveList);
         Map<String, Integer> map = SensitiveWordUtil.matchWords(content);*/
         WmNews wmNews = wmNewsMapper.selectById(6259);
-        log.info("wmNews:{}",wmNews);
+        log.info("wmNews:{}", wmNews);
     }
+@Autowired
+    RabbitTemplate rabbitTemplate;
+    @Test
+    public void d(){
+        rabbitTemplate.convertAndSend(RabbitConstants.EXCANGE_NAME,"text.hehe", "momomomomomo");
+       // System.out.println(host);
+    }
+
 
 }

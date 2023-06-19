@@ -10,6 +10,8 @@ spring:
       config:
         server-addr: 192.168.200.130:8848
         file-extension: yml
+
+
 logging:
   level:
     com.heima.apis.article.IArticleClient: debug
