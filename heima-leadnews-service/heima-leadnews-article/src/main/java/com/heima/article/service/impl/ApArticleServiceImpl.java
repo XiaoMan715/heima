@@ -135,6 +135,7 @@ public class ApArticleServiceImpl extends ServiceImpl<ApArticleMapper,ApArticle>
         }
         //异步调用生成静态文件上传到mio中
           articleFreemarkerService.buildArticleToMinIO(article, dto.getContent());
+        //发送kakfa给es生成索引
         return ResponseResult.okResult(article.getId());
     }
 
